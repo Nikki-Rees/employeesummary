@@ -21,8 +21,8 @@ function promptUser() {
             name: "Manager",
             message: "Please enter your project name",
             default: "No information provided"
-        }
-        ,
+        }.then,
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
