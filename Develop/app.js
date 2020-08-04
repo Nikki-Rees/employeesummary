@@ -10,11 +10,31 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
 const employees = [];
+
+const processAnswers = answers => {
+
+    if (answers.addRole === "Engineer") {
+        const newEngineer = new Engineer(answers.name, answers.email, answers.id, answers.github);
+        employees.push(newEngineer);
+    }
+    else if (answers.addRole === "Intern") {
+        const newIntern = new Intern(answers.name, answers.email, answers.id, answers.school);
+        employees.push(newIntern);
+    }
+    if (answers.addAnother) {
+        promptEmployee();
+    } else {
+        fs.writeFile(outputPath, render(employees), err => {
+            if (err) {
+                throw err;
+            }
+            console.log(employees
+            )
+        });
+
+    };
+}
 
 function promptManager() {
     return inquirer.prompt([
@@ -43,11 +63,12 @@ function promptManager() {
             message: "Please enter manager's office number"
         }
 
-    ]).then(({ answers }) => {
+    ]).then(answers => {
         const newManager = new Manager(answers.name, answers.email, answers.id, answers.officeNumber);
         employees.push(newManager);
         promptEmployee();
-    });
+    })
+
 };
 
 promptManager()
@@ -58,7 +79,7 @@ function promptEmployee() {
             type: "list",
             name: "addRole",
             message: "Please enter employee role",
-            choices: ["Engineer", "Intern", "No thanks, I'm all done"]
+            choices: ["Engineer", "Intern"]
         }, {
             type: "input",
             name: "name",
@@ -78,56 +99,18 @@ function promptEmployee() {
             type: "input",
             name: "github",
             message: "Please enter engineer's gitHub username",
-            when: (answers) => answers.addRole === 'engineer'
+            when: (answers) => answers.addRole === "Engineer"
         }, {
             type: "input",
             name: "school",
             message: "Please enter intern's school",
-            when: (answers) => answers.addRole === 'intern'
+            when: (answers) => answers.addRole === "Intern"
+        }, {
+            type: "confirm",
+            name: "addAnother",
+            message: "Would you like to add another team member?"
         }
 
-    ]).then(({ answers }) => {
-
-        if (answers.addRole === "Engineer") {
-            const newEngineer = new Engineer(answers.name, answers.email, answers.id, answers.officeNumber);
-            employees.push(newEngineer);
-            promptEmployee();
-        }
-        else if (answers.addRole === "Intern") {
-            const newIntern = new Intern(answers.name, answers.email, answers.id, answers.officeNumber);
-            employees.push(newIntern);
-            promptEmployee();
-        }
-        else if (answers.addRole === "No thanks, I'm all done") {
-
-            fs.writeFile(outputPath, render(employees), err => {
-                if (err) {
-                    throw err;
-                }
-                console.log(myTeam)
-            });
-
-        };
-    });
+    ]).then(processAnswers());
 }
 
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! 
