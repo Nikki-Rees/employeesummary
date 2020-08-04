@@ -14,13 +14,55 @@ const render = require("./lib/htmlRenderer");
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
+const employees = [];
 
-function promptEmployee() {
+function promptManager() {
     return inquirer.prompt([
         {
             type: "input",
             name: "name",
-            message: "Please enter Employee name",
+            message: "Please enter manager name",
+            default: "No information provided"
+        }, {
+            type: "input",
+            name: "email",
+            message: "Please enter employee email",
+            default: "No information provided"
+        }, {
+            type: "confirm",
+            name: "addRole",
+            message: "Role is manager",
+        }, {
+            type: "input",
+            name: "id",
+            message: "Please enter employee ID",
+            default: "No information provided"
+        }, {
+            type: "input",
+            name: "officeNumber",
+            message: "Please enter manager's office number"
+        }
+
+    ]).then(({ answers }) => {
+        const newManager = new Manager(answers.name, answers.email, answers.id, answers.officeNumber);
+        employees.push(newManager);
+        promptEmployee();
+    });
+};
+
+promptManager()
+
+function promptEmployee() {
+    return inquirer.prompt([
+        {
+            type: "list",
+            name: "addRole",
+            message: "Please enter employee role",
+            choices: ["Engineer", "Intern", "No thanks, I'm all done"]
+        }, {
+            type: "input",
+            name: "name",
+            message: "Please enter employee name",
             default: "No information provided"
         }, {
             type: "input",
@@ -33,26 +75,41 @@ function promptEmployee() {
             message: "Please enter employee ID",
             default: "No information provided"
         }, {
-            type: "list",
-            name: "role",
-            message: "Please select employees role",
-            choices: ["manager", "engineer", "intern"]
-        }, {
-            type: "input",
-            name: "officeNumber",
-            message: "Please enter manager's office number",
-            when: (answers) => answers.role === 'manager'
-        }, {
             type: "input",
             name: "github",
             message: "Please enter engineer's gitHub username",
-            when: (answers) => answers.role === 'engineer'
+            when: (answers) => answers.addRole === 'engineer'
         }, {
             type: "input",
             name: "school",
             message: "Please enter intern's school",
-            when: (answers) => answers.role === 'intern'
+            when: (answers) => answers.addRole === 'intern'
         }
+
+    ]).then(({ answers }) => {
+
+        if (answers.addRole === "Engineer") {
+            const newEngineer = new Engineer(answers.name, answers.email, answers.id, answers.officeNumber);
+            employees.push(newEngineer);
+            promptEmployee();
+        }
+        else if (answers.addRole === "Intern") {
+            const newIntern = new Intern(answers.name, answers.email, answers.id, answers.officeNumber);
+            employees.push(newIntern);
+            promptEmployee();
+        }
+        else if (answers.addRole === "No thanks, I'm all done") {
+
+            fs.writeFile(outputPath, render(employees), err => {
+                if (err) {
+                    throw err;
+                }
+                console.log(myTeam)
+            });
+
+        };
+    });
+}
 
 
 // After the user has input all employees desired, call the `render` function (required
@@ -73,4 +130,4 @@ function promptEmployee() {
 // and Intern classes should all extend from a class named Employee; see the directions
 // for further information. Be sure to test out each class and verify it generates an
 // object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+// for the provided `render` function to work! 
