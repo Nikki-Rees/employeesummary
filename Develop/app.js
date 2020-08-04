@@ -41,26 +41,22 @@ function promptManager() {
         {
             type: "input",
             name: "name",
-            message: "Please enter manager name",
+            message: "Please enter manager's full name:",
             default: "No information provided"
         }, {
             type: "input",
             name: "email",
-            message: "Please enter employee email",
+            message: "Please enter manager's email:",
             default: "No information provided"
-        }, {
-            type: "confirm",
-            name: "addRole",
-            message: "Role is manager",
         }, {
             type: "input",
             name: "id",
-            message: "Please enter employee ID",
+            message: "Please enter manager's employee ID",
             default: "No information provided"
         }, {
             type: "input",
             name: "officeNumber",
-            message: "Please enter manager's office number"
+            message: "Please enter the manager's office number"
         }
 
     ]).then(answers => {
@@ -78,32 +74,32 @@ function promptEmployee() {
         {
             type: "list",
             name: "addRole",
-            message: "Please enter employee role",
+            message: "Please select the employee's role:",
             choices: ["Engineer", "Intern"]
         }, {
             type: "input",
             name: "name",
-            message: "Please enter employee name",
+            message: "Please enter the employee's full name:",
             default: "No information provided"
         }, {
             type: "input",
             name: "email",
-            message: "Please enter employee email",
+            message: "Please enter the employee's email:",
             default: "No information provided"
         }, {
             type: "input",
             name: "id",
-            message: "Please enter employee ID",
+            message: "Please enter the employee's ID:",
             default: "No information provided"
         }, {
             type: "input",
             name: "github",
-            message: "Please enter engineer's gitHub username",
+            message: "Please enter the engineer's gitHub username:",
             when: (answers) => answers.addRole === "Engineer"
         }, {
             type: "input",
             name: "school",
-            message: "Please enter intern's school",
+            message: "Please enter the intern's school:",
             when: (answers) => answers.addRole === "Intern"
         }, {
             type: "confirm",
